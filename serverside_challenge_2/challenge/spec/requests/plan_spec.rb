@@ -37,7 +37,7 @@ RSpec.describe "Plans", type: :request do
     end
 
     describe '正常系' do
-      context '' do
+      context 'typical case' do
         let(:params) { { ampere: 10, usage: 120 } }
 
         it_behaves_like 'ok', [
@@ -53,6 +53,7 @@ RSpec.describe "Plans", type: :request do
           }
         ]
       end
+
       context 'usageが0の時(0以上バリデーションの境界値)' do
         let(:params) { { ampere: 10, usage: 0 } }
 
