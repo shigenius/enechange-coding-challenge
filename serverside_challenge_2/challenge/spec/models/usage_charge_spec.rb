@@ -8,7 +8,7 @@ RSpec.describe UsageCharge, type: :model do
   describe 'scopes' do
     describe '.by_usage' do
       subject { described_class.by_usage(usage) }
-      
+
       let(:usage) { 100 }
 
       let!(:usage_charge_1) { create(:usage_charge, usage_lower: 0, usage_upper: 100) }
@@ -22,6 +22,17 @@ RSpec.describe UsageCharge, type: :model do
       it 'returns usage charges that include the specified usage' do
         expect(subject).to contain_exactly(usage_charge_1, usage_charge_2, usage_charge_3)
       end
+    end
+  end
+
+  describe '#calc_charge' do
+    subject { usage_charge.calc_charge(usage) }
+
+    let(:usage_charge) { build(:usage_charge, unit_price: 19.88) }
+    let(:usage) { 111 }
+
+    it '期待される従量料金を返すこと' do
+      expect(subject).to be_within(0.01).of(2206.68)
     end
   end
 end

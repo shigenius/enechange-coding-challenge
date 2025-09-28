@@ -4,6 +4,12 @@ class UsageCharge < ApplicationRecord
   # @param usage [Integer] 電気使用量(kWh)
   # NOTE: usage_upper = nullの場合は上限なしとみなす
   scope :by_usage, ->(usage) { where("usage_lower <= ? AND (usage_upper IS NULL OR usage_upper >= ?)", usage, usage) }
+
+  # @param usage [Integer] 電気使用量(kWh)
+  # @return [BigDecimal] 従量料金(円)
+  def calc_charge(usage)
+    unit_price * usage
+  end
 end
 
 # == Schema Information

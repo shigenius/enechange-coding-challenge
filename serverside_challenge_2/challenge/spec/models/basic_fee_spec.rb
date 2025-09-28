@@ -8,7 +8,7 @@ RSpec.describe BasicFee, type: :model do
   describe 'scopes' do
     describe '.by_ampere' do
       subject { described_class.by_ampere(ampere) }
-      
+
       let(:ampere) { 30 }
 
       let!(:basic_fee_30A) { create(:basic_fee, ampere: 30) }
