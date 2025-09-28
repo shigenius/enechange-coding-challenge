@@ -1,6 +1,6 @@
 class CreatePlans < ActiveRecord::Migration[7.0]
   def change
-    create_table :plans do |t|
+    create_table :plans, comment: 'プラン' do |t|
       t.references :provider, null: false, foreign_key: true
       t.string :name, null: false
       t.timestamps

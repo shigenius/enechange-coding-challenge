@@ -14,7 +14,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "basic_fees", force: :cascade do |t|
+  create_table "basic_fees", comment: "基本料金", force: :cascade do |t|
     t.bigint "plan_id", null: false
     t.integer "ampere", null: false, comment: "契約アンペア数(A)"
     t.decimal "fee", precision: 10, scale: 2, null: false, comment: "基本料金(円)"
@@ -25,7 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
     t.index ["plan_id"], name: "index_basic_fees_on_plan_id"
   end
 
-  create_table "plans", force: :cascade do |t|
+  create_table "plans", comment: "プラン", force: :cascade do |t|
     t.bigint "provider_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -33,13 +33,13 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
     t.index ["provider_id"], name: "index_plans_on_provider_id"
   end
 
-  create_table "providers", force: :cascade do |t|
+  create_table "providers", comment: "電力会社", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "usage_charges", force: :cascade do |t|
+  create_table "usage_charges", comment: "従量料金", force: :cascade do |t|
     t.bigint "plan_id", null: false
     t.integer "usage_lower", null: false, comment: "電気使用量(kWh) 下限"
     t.integer "usage_upper", comment: "電気使用量(kWh) 上限"
