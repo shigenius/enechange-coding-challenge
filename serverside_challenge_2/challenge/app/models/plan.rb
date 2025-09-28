@@ -20,7 +20,6 @@ class Plan < ApplicationRecord
   # @param usage [Integer] 電気使用量(kWh)
   # @return [Array<Hash>] [{ provider_name: ‘Looopでんき’, plan_name: ‘おうちプラン’, price: ‘1234’ }, …]
   def self.plan_prices(ampere:, usage:)
-    # Integerであること
     raise ArgumentError, 'ampere must be an Integer' unless ampere.is_a?(Integer)
     raise ArgumentError, 'usage must be an Integer' unless usage.is_a?(Integer)
 
@@ -39,6 +38,7 @@ class Plan < ApplicationRecord
 
   private
 
+  # 電気料金 = ①基本料金 + ②従量料金
   # @param basic_fee [BasicFee] 基本料金オブジェクト
   # @param usage_charge [UsageCharge] 従量料金オブジェクト
   # @param usage [Integer] 電気使用量(kWh)
