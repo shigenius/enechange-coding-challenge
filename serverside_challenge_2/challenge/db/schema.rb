@@ -41,7 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
 
   create_table "usage_charges", force: :cascade do |t|
     t.bigint "plan_id", null: false
-    t.integer "usage_lower", comment: "電気使用量(kWh) 下限"
+    t.integer "usage_lower", null: false, comment: "電気使用量(kWh) 下限"
     t.integer "usage_upper", comment: "電気使用量(kWh) 上限"
     t.decimal "unit_price", precision: 10, scale: 2, null: false, comment: "従量料金単価(円/kWh)"
     t.datetime "created_at", null: false
