@@ -3,10 +3,6 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["ampere", "usage", "results"]
 
-  connect() {
-    console.log("PlansController connected");
-  }
-
   async search(event) {
     event.preventDefault();
 
