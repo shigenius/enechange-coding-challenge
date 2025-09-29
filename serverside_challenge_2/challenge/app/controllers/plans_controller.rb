@@ -1,5 +1,7 @@
-class PlanController < ApplicationController
+class PlansController < ApplicationController
   PERMITTED_AMPERES = [10, 15, 20, 30, 40, 50, 60].freeze
+
+  def index; end
 
   # return json : [{ provider_name: ‘Looopでんき’, plan_name: ‘おうちプラン’, price: ‘1234’ }, …]
   def prices

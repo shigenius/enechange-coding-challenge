@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe "Plans", type: :request do
-  describe "GET /prices" do
-    subject { get '/plan/prices', params: }
+  describe "GET /plans/prices" do
+    subject { get '/plans/prices', params: }
 
     let(:provider1) { create(:provider, name: '東京電力エナジーパートナー') }
     let(:plan1) { create(:plan, name: 'スタンダードS', provider: provider1) }

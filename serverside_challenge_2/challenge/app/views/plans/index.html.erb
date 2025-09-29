@@ -1,0 +1,27 @@
+<h1>電気料金のシミュレーション</h1>
+
+<div data-controller="plans">
+  <form data-action="submit->plans#search">
+    <label for="ampere">契約アンペア数(A):</label>
+    <%= select_tag :ampere, options_for_select(PlansController::PERMITTED_AMPERES), data: { plans_target: "ampere" } %>
+    <br>
+    <label for="usage">使用量(kWh):</label>
+    <input type="number" name="usage" min="0" value="0" data-plans-target="usage">
+    <br>
+    <button type="submit", data-action="plans#search">
+      プラン検索
+    </button>
+  </form>
+
+  <table style="margin-top:20px;">
+    <thead>
+      <tr>
+        <th>電力会社名</th>
+        <th>プラン名</th>
+        <th>電気料金（円）</th>
+      </tr>
+    </thead>
+    <tbody data-plans-target="results">
+    </tbody>
+  </table>
+</div>
