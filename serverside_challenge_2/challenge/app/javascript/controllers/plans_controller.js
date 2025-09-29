@@ -12,11 +12,9 @@ export default class extends Controller {
 
     try {
       const response = await fetch(`/plans/prices?ampere=${ampere}&usage=${usage}`);
-      console.log(response);
       if (!response.ok) throw new Error("API request failed");
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
-        console.log(data);
         data.forEach(plan => {
           const row = this.createRow(plan);
           this.resultsTarget.appendChild(row);
