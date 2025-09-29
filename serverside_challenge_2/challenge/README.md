@@ -1,24 +1,42 @@
-# README
+# これは
+電気料金のシミュレーションを行えるサービスです。
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+The site is hosted: TODO
 
-Things you may want to cover:
+# 構成
+- Back-end
+    - Ruby 3.1.2, Ruby on Rails 7.0.8
+- DB
+    - PostgreSQL
+- Front-end
+    - erb, Stimulus, CSS
+- Asset
+    - importmap, propshaft
+- Test
+    - Rspec, FactoryBot, Shoulda Matchers
+- Dev
+    - annotate gem
 
-* Ruby version
+# railsサーバー起動
+```sh
+docker compose up -d
+```
 
-* System dependencies
+## データベース作成
+```sh
+docker compose run -it web rails db:create
+```
 
-* Configuration
+## データベース初期化、データ作成
+```sh
+docker compose run -it web rails db:reset
+```
 
-* Database creation
+# rspec実行
+```sh
+docker compose run -it web rspec
+```
 
-* Database initialization
+# 電気料金のシミュレーション
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+http://localhost:3000/plans にアクセス
