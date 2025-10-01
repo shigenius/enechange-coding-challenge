@@ -1,8 +1,6 @@
 # これは
 電気料金のシミュレーションを行えるサービスです。
 
-The site is hosted: TODO
-
 # 構成
 - Back-end
     - Ruby 3.1.2, Ruby on Rails 7.0.8
@@ -17,7 +15,8 @@ The site is hosted: TODO
 - Dev
     - annotate gem
 
-# railsサーバー起動
+# 開発環境
+## railsサーバー起動
 ```sh
 docker compose up -d
 ```
@@ -32,11 +31,11 @@ docker compose run -it web rails db:create
 docker compose run -it web rails db:reset
 ```
 
-# rspec実行
+## rspec実行
 ```sh
 docker compose run -it web rspec
 ```
 
-# 電気料金のシミュレーション
+## 電気料金のシミュレーション
 
 http://localhost:3000/plans にアクセス
