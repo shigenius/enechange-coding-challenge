@@ -40,7 +40,9 @@ class Plan < ApplicationRecord
 
   private
 
-  # 電気料金 = ①基本料金 + ②従量料金
+  # 電気料金 = ①基本料金 + ②従量料金 + ③そのほか
+  # NOTE: 現時点では③そのほかは考慮しない
+  # NOTE: もし他の箇所で同じように料金を計算する必要が出てきた場合や、そのほかを計算し複雑化する場合は、電気料金の値オブジェクト化を検討すること
   # @param basic_fee [BasicFee] 基本料金オブジェクト
   # @param usage_charge [UsageCharge] 従量料金オブジェクト
   # @param usage [Integer] 電気使用量(kWh)
