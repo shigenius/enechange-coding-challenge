@@ -31,8 +31,9 @@ end
 #
 # Indexes
 #
-#  index_usage_charges_on_plan_id                      (plan_id)
-#  index_usage_charges_on_usage_lower_and_usage_upper  (usage_lower,usage_upper)
+#  index_usage_charges_on_plan_id                                  (plan_id)
+#  index_usage_charges_on_plan_id_and_usage_lower_and_usage_upper  (plan_id,usage_lower,usage_upper)
+#  index_usage_charges_on_usage_lower_and_usage_upper              (usage_lower,usage_upper)
 #
 # Foreign Keys
 #

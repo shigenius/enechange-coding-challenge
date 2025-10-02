@@ -9,5 +9,6 @@ class CreateUsageCharges < ActiveRecord::Migration[7.0]
     end
 
     add_index :usage_charges, [:usage_lower, :usage_upper]
+    add_index :usage_charges, [:plan_id, :usage_lower, :usage_upper]
   end
 end

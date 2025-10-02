@@ -101,7 +101,7 @@ RSpec.describe "Plans", type: :request do
       context 'usage is float' do
         let(:params) { { ampere: 30, usage: 100.5 } }
         it_behaves_like 'bad request', 'Usage must be a non-negative integer'
-  end
+      end
     end
   end
 end

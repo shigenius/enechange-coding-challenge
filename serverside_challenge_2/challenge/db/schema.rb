@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
     t.decimal "unit_price", precision: 10, scale: 2, null: false, comment: "従量料金単価(円/kWh)"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["plan_id", "usage_lower", "usage_upper"], name: "index_usage_charges_on_plan_id_and_usage_lower_and_usage_upper"
     t.index ["plan_id"], name: "index_usage_charges_on_plan_id"
     t.index ["usage_lower", "usage_upper"], name: "index_usage_charges_on_usage_lower_and_usage_upper"
   end
