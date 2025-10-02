@@ -50,30 +50,32 @@ RSpec.describe Plan, type: :model do
   describe '.plan_prices' do
     subject { described_class.plan_prices(ampere:, usage:) }
 
-    let(:provider1) { create(:provider, name: '東京電力エナジーパートナー') }
-    let(:provider2) { create(:provider, name: '東京ガス') }
-    let(:provider3) { create(:provider, name: 'Looopでんき') }
-    let(:plan1) { create(:plan, name: '従量電灯B', provider: provider1) }
-    let(:plan2) { create(:plan, name: 'スタンダードS', provider: provider1) }
-    let(:plan3) { create(:plan, name: 'ずっとも電気1', provider: provider2) }
-    let(:plan4) { create(:plan, name: 'おうちプラン', provider: provider3) }
-    let!(:basic_fee1) { create(:basic_fee, plan: plan1, ampere: 10, fee: 286.0) }
-    let!(:basic_fee2) { create(:basic_fee, plan: plan1, ampere: 30, fee: 858.00) }
-    let!(:basic_fee3) { create(:basic_fee, plan: plan2, ampere: 10, fee: 311.75) }
-    let!(:basic_fee4) { create(:basic_fee, plan: plan2, ampere: 30, fee: 935.25) }
-    let!(:basic_fee5) { create(:basic_fee, plan: plan3, ampere: 30, fee: 858.00) }
-    let!(:basic_fee6) { create(:basic_fee, plan: plan4, ampere: 10, fee: 0.00) }
-    let!(:basic_fee7) { create(:basic_fee, plan: plan4, ampere: 30, fee: 0.00) }
-    let!(:usage_charge1) { create(:usage_charge, plan: plan1, usage_lower: 0, usage_upper: 120, unit_price: 19.88) }
-    let!(:usage_charge2) { create(:usage_charge, plan: plan1, usage_lower: 121, usage_upper: 300, unit_price: 26.48) }
-    let!(:usage_charge3) { create(:usage_charge, plan: plan1, usage_lower: 301, usage_upper: nil, unit_price: 30.57) }
-    let!(:usage_charge4) { create(:usage_charge, plan: plan2, usage_lower: 0, usage_upper: 120, unit_price: 29.80) }
-    let!(:usage_charge5) { create(:usage_charge, plan: plan2, usage_lower: 121, usage_upper: 300, unit_price: 36.40) }
-    let!(:usage_charge6) { create(:usage_charge, plan: plan2, usage_lower: 301, usage_upper: nil, unit_price: 40.49) }
-    let!(:usage_charge7) { create(:usage_charge, plan: plan3, usage_lower: 0, usage_upper: 120, unit_price: 23.67) }
-    let!(:usage_charge8) { create(:usage_charge, plan: plan3, usage_lower: 121, usage_upper: 300, unit_price: 23.88) }
-    let!(:usage_charge9) { create(:usage_charge, plan: plan3, usage_lower: 301, usage_upper: nil, unit_price: 26.41) }
-    let!(:usage_charge10) { create(:usage_charge, plan: plan4, usage_lower: 0, usage_upper: nil, unit_price: 28.8) }
+    before do
+      provider1 = create(:provider, name: '東京電力エナジーパートナー')
+      provider2 = create(:provider, name: '東京ガス')
+      provider3 = create(:provider, name: 'Looopでんき')
+      plan1 = create(:plan, name: '従量電灯B', provider: provider1)
+      plan2 = create(:plan, name: 'スタンダードS', provider: provider1)
+      plan3 = create(:plan, name: 'ずっとも電気1', provider: provider2)
+      plan4 = create(:plan, name: 'おうちプラン', provider: provider3)
+      create(:basic_fee, plan: plan1, ampere: 10, fee: 286.0)
+      create(:basic_fee, plan: plan1, ampere: 30, fee: 858.00)
+      create(:basic_fee, plan: plan2, ampere: 10, fee: 311.75)
+      create(:basic_fee, plan: plan2, ampere: 30, fee: 935.25)
+      create(:basic_fee, plan: plan3, ampere: 30, fee: 858.00)
+      create(:basic_fee, plan: plan4, ampere: 10, fee: 0.00)
+      create(:basic_fee, plan: plan4, ampere: 30, fee: 0.00)
+      create(:usage_charge, plan: plan1, usage_lower: 0,   usage_upper: 120, unit_price: 19.88)
+      create(:usage_charge, plan: plan1, usage_lower: 121, usage_upper: 300, unit_price: 26.48)
+      create(:usage_charge, plan: plan1, usage_lower: 301, usage_upper: nil, unit_price: 30.57)
+      create(:usage_charge, plan: plan2, usage_lower: 0,   usage_upper: 120, unit_price: 29.80)
+      create(:usage_charge, plan: plan2, usage_lower: 121, usage_upper: 300, unit_price: 36.40)
+      create(:usage_charge, plan: plan2, usage_lower: 301, usage_upper: nil, unit_price: 40.49)
+      create(:usage_charge, plan: plan3, usage_lower: 0,   usage_upper: 120, unit_price: 23.67)
+      create(:usage_charge, plan: plan3, usage_lower: 121, usage_upper: 300, unit_price: 23.88)
+      create(:usage_charge, plan: plan3, usage_lower: 301, usage_upper: nil, unit_price: 26.41)
+      create(:usage_charge, plan: plan4, usage_lower: 0,   usage_upper: nil, unit_price: 28.8)
+    end
 
     context 'アンペア10A、使用量120kWhの場合' do
       let(:ampere) { 10 }
