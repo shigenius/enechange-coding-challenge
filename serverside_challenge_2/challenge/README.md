@@ -39,3 +39,18 @@ docker compose run -it web rspec
 ## 電気料金のシミュレーション
 
 http://localhost:3000/plans にアクセス
+
+
+# ドキュメントの更新
+
+annotationの強制更新　※ 基本的にmigrate実行時に更新されるので通常は不要
+
+```sh
+docker compose run -it web bundle exec annotate --force
+```
+
+`erd.pdf`の更新
+
+```sh
+docker compose run -it web rake erd
+```
