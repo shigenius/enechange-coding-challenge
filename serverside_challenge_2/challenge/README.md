@@ -13,44 +13,50 @@
 - Test
     - Rspec, FactoryBot, Shoulda Matchers
 - Dev
-    - annotate gem
+    - annotate, rails-erd
 
 # 開発環境
-## railsサーバー起動
+## 初回セットアップ
 ```sh
-docker compose up -d
+./scripts/setup.sh
 ```
 
-## データベース作成
-```sh
-docker compose run -it web rails db:create
-```
+- DB作成
+- seedデータ作成
+- railsサーバー起動
 
-## データベース初期化、データ作成
-```sh
-docker compose run -it web rails db:reset
-```
-
-## rspec実行
-```sh
-docker compose run -it web rspec
-```
+まで
 
 ## 電気料金のシミュレーション
 
 http://localhost:3000/plans にアクセス
 
+## 基本コマンド
+### railsサーバー起動
+```sh
+docker compose up -d
+```
+
+### データベース初期化、seedデータ作成
+```sh
+docker compose run --rm web rails db:reset
+```
+
+### rspec実行
+```sh
+docker compose run --rm web rspec
+```
 
 # ドキュメントの更新
 
 annotationの強制更新　※ 基本的にmigrate実行時に更新されるので通常は不要
 
 ```sh
-docker compose run -it web bundle exec annotate --force
+docker compose run --rm web bundle exec annotate --force
 ```
 
 `erd.pdf`の更新
 
 ```sh
-docker compose run -it web rake erd
+docker compose run --rm web rake erd
 ```
