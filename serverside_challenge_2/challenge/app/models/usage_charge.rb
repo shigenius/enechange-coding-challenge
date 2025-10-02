@@ -1,10 +1,15 @@
 class UsageCharge < ApplicationRecord
   belongs_to :plan
 
+  validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :usage_lower, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :usage_upper, numericality: { only_integer: true, greater_than: :usage_lower }, allow_nil: true
+
   # @param usage [Integer] 電気使用量(kWh)
   # NOTE: usage_upper = nullの場合は上限なしとみなす
   scope :by_usage, ->(usage) { where("usage_lower <= ? AND (usage_upper IS NULL OR usage_upper >= ?)", usage, usage) }
 
+  # 従量料金 = 従量料金単価(円/kWh) × 電気使用量(kWh)
   # @param usage [Integer] 電気使用量(kWh)
   # @return [BigDecimal] 従量料金(円)
   def calc_charge(usage)

@@ -35,6 +35,41 @@ RSpec.describe UsageCharge, type: :model do
       expect(subject).to be_within(0.01).of(2206.68)
     end
   end
+
+  describe 'validations' do
+    it { should validate_presence_of(:unit_price) }
+    it { should validate_numericality_of(:unit_price).is_greater_than_or_equal_to(0) }
+    it { should validate_presence_of(:usage_lower) }
+    # it { should validate_numericality_of(:usage_upper).only_integer.is_greater_than(:usage_lower).allow_nil }
+    describe 'usage_upper is greater than usage_lower' do
+      it 'is invalid if usage_lower < usage_upper' do
+        record = build(:usage_charge,
+          usage_lower: 100,
+          usage_upper: 101,
+        )
+
+        expect(record).to be_valid
+      end
+
+      it 'is valid if usage_upper usage_lower > usage_upper' do
+        record = build(:usage_charge,
+          usage_lower: 100,
+          usage_upper: 99,
+        )
+
+        expect(record).to be_invalid
+      end
+
+      it 'is valid if usage_upper is usage_lower == usage_upper' do
+        record = build(:usage_charge,
+          usage_lower: 100,
+          usage_upper: 100,
+        )
+
+        expect(record).to be_invalid
+      end
+    end
+  end
 end
 
 # == Schema Information

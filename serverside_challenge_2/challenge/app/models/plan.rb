@@ -3,6 +3,8 @@ class Plan < ApplicationRecord
   has_many :basic_fees, dependent: :destroy
   has_many :usage_charges, dependent: :destroy
 
+  validates :name, presence: true
+
   # 契約アンペア数と電気使用量に基づき、該当する料金プランの一覧を取得する
   # @param ampere [Integer] 契約アンペア数(A)
   # @param usage [Integer] 電気使用量(kWh)

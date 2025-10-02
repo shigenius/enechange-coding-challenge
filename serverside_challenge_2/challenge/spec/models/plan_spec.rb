@@ -43,6 +43,10 @@ RSpec.describe Plan, type: :model do
     end
   end
 
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:name) }
+  end
+
   describe '.plan_prices' do
     subject { described_class.plan_prices(ampere:, usage:) }
 

@@ -5,6 +5,13 @@ RSpec.describe BasicFee, type: :model do
     it { is_expected.to belong_to(:plan) }
   end
 
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:ampere) }
+    it { is_expected.to validate_numericality_of(:ampere).only_integer.is_greater_than(0) }
+    it { is_expected.to validate_presence_of(:fee) }
+    it { is_expected.to validate_numericality_of(:fee).is_greater_than_or_equal_to(0) }
+  end
+
   describe 'scopes' do
     describe '.by_ampere' do
       subject { described_class.by_ampere(ampere) }
