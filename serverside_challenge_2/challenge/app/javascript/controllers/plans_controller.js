@@ -16,7 +16,7 @@ export default class extends Controller {
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
         data.forEach(plan => {
-          const row = this.createRow(plan);
+          const row = this.buildRow(plan);
           this.resultsTarget.appendChild(row);
         });
       } else {
@@ -27,12 +27,12 @@ export default class extends Controller {
     }
   }
 
-  createRow(object) {
+  buildRow(plan) {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${object.provider_name}</td>
-      <td>${object.plan_name}</td>
-      <td>${object.price}</td>
+      <td>${plan.provider_name}</td>
+      <td>${plan.plan_name}</td>
+      <td>${plan.price}</td>
     `;
     return row;
   }
