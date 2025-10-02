@@ -25,7 +25,7 @@ class PlansController < ApplicationController
       raise ArgumentError, 'Ampere and usage must be provided'
     end
 
-    # 契約アンペア数 : 10 / 15 / 20 / 30 / 40 / 50 / 60 のいずれかとする(単位A)
+    # 契約アンペア数 : PERMITTED_AMPERES のいずれかとする(単位A)
     unless ampere.match?(/\A\d+\z/) && PERMITTED_AMPERES.include?(ampere.to_i)
       raise ArgumentError, "Ampere must be one of #{PERMITTED_AMPERES.join(', ')}"
     end
