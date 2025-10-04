@@ -18,7 +18,7 @@ RSpec.describe UsageCharge, type: :model do
       let!(:usage_charge_4) { create(:usage_charge, usage_lower: 0, usage_upper: 99) }
       let!(:usage_charge_5) { create(:usage_charge, usage_lower: 101, usage_upper: 200) }
       let!(:usage_charge_6) { create(:usage_charge, usage_lower: 101, usage_upper: nil) }
-\
+
       it 'returns usage charges that include the specified usage' do
         expect(subject).to contain_exactly(usage_charge_1, usage_charge_2, usage_charge_3)
       end
