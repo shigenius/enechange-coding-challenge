@@ -42,7 +42,7 @@ RSpec.describe UsageCharge, type: :model do
     it { should validate_presence_of(:usage_lower) }
     # it { should validate_numericality_of(:usage_upper).only_integer.is_greater_than(:usage_lower).allow_nil }
     describe 'usage_upper is greater than usage_lower' do
-      it 'is invalid if usage_lower < usage_upper' do
+      it 'is valid if usage_lower < usage_upper' do
         record = build(:usage_charge,
           usage_lower: 100,
           usage_upper: 101,
@@ -51,7 +51,7 @@ RSpec.describe UsageCharge, type: :model do
         expect(record).to be_valid
       end
 
-      it 'is valid if usage_upper usage_lower > usage_upper' do
+      it 'is invalid if usage_upper usage_lower > usage_upper' do
         record = build(:usage_charge,
           usage_lower: 100,
           usage_upper: 99,
@@ -60,7 +60,7 @@ RSpec.describe UsageCharge, type: :model do
         expect(record).to be_invalid
       end
 
-      it 'is valid if usage_upper is usage_lower == usage_upper' do
+      it 'is invalid if usage_upper is usage_lower == usage_upper' do
         record = build(:usage_charge,
           usage_lower: 100,
           usage_upper: 100,
