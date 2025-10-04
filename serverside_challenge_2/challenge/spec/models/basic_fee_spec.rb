@@ -10,6 +10,32 @@ RSpec.describe BasicFee, type: :model do
     it { is_expected.to validate_numericality_of(:ampere).only_integer.is_greater_than(0) }
     it { is_expected.to validate_presence_of(:fee) }
     it { is_expected.to validate_numericality_of(:fee).is_greater_than_or_equal_to(0) }
+
+    describe 'uniqueness of plan_id and ampere combination' do
+      let(:plan) { create(:plan) }
+      let!(:existing_basic_fee) { create(:basic_fee, plan:, ampere: 30, fee: 1000) }
+
+      context 'when combination already exists' do
+        it 'is invalid with duplicate plan_id and ampere' do
+          new_basic_fee = build(:basic_fee, plan:, ampere: 30, fee: 1500)
+          expect(new_basic_fee).not_to be_valid
+          expect(new_basic_fee.errors[:ampere]).to include('has already been taken')
+        end
+      end
+
+      context 'when combination is unique' do
+        it 'is valid with different plan' do
+          other_plan = create(:plan)
+          new_basic_fee = build(:basic_fee, plan: other_plan, ampere: 30, fee: 1000)
+          expect(new_basic_fee).to be_valid
+        end
+
+        it 'is valid with different ampere' do
+          new_basic_fee = build(:basic_fee, plan:, ampere: 40, fee: 1000)
+          expect(new_basic_fee).to be_valid
+        end
+      end
+    end
   end
 
   describe 'scopes' do

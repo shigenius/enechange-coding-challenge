@@ -2,6 +2,7 @@ class BasicFee < ApplicationRecord
   belongs_to :plan
 
   validates :ampere, presence: true, numericality: { only_integer: true, greater_than: 0 }
+  validates :ampere, uniqueness: { scope: :plan_id }
   validates :fee, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   # @param ampere [Integer] 契約アンペア数(A)

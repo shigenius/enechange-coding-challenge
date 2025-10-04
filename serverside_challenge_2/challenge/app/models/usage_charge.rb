@@ -4,6 +4,7 @@ class UsageCharge < ApplicationRecord
   validates :unit_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :usage_lower, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :usage_upper, numericality: { only_integer: true, greater_than: :usage_lower }, allow_nil: true
+  validate :no_overlapping_ranges
 
   # @param usage [Integer] 電気使用量(kWh)
   # NOTE: usage_upper = nullの場合は上限なしとみなす
@@ -14,6 +15,23 @@ class UsageCharge < ApplicationRecord
   # @return [BigDecimal] 従量料金(円)
   def calc_charge(usage)
     unit_price * usage
+  end
+
+  private
+
+  # 同じ料金プラン内で、電気使用量の範囲が重複しないこと
+  def no_overlapping_ranges
+    max_usage = 2_147_483_647 # PostgreSQL INTEGER 最大値
+    upper = usage_upper || max_usage
+
+    overlapping = UsageCharge.where(plan_id:).where.not(id:)
+      .where("(usage_lower <= ? AND (usage_upper IS NULL OR usage_upper >= ?))",
+            upper,
+            usage_lower)
+
+    return unless overlapping.exists?
+
+    errors.add(:base, "overlapping usage range exists")
   end
 end
 
