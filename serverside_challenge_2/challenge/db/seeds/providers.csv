@@ -1,4 +1,4 @@
-id,name
-1,東京電力エナジーパートナー
-2,東京ガス
-3,Looopでんき
+code,name
+provider_1,東京電力エナジーパートナー
+provider_2,東京ガス
+provider_3,Looopでんき

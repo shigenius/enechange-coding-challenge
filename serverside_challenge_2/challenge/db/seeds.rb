@@ -9,34 +9,18 @@
 require 'csv'
 csv_dir = Rails.root.join("db", "seeds")
 
-CSV.foreach(csv_dir.join("providers.csv"), headers: true) do |row|
-  Provider.create!(
-    id: row["id"],
-    name: row["name"],
-  )
-end
+seeds = [
+  { file: "providers.csv", model: Provider, attributes: %w(code name) },
+  { file: "plans.csv", model: Plan, attributes: %w(code provider_code name) },
+  { file: "basic_fees.csv", model: BasicFee, attributes: %w(code plan_code ampere fee) },
+  { file: "usage_charges.csv", model: UsageCharge, attributes: %w(code plan_code usage_lower usage_upper unit_price) }
+]
 
-CSV.foreach(csv_dir.join("plans.csv"), headers: true) do |row|
-  Plan.create!(
-    id: row["id"],
-    provider_id: row["provider_id"],
-    name: row["name"],
-  )
-end
-
-CSV.foreach(csv_dir.join("basic_fees.csv"), headers: true) do |row|
-  BasicFee.create!(
-    plan_id: row["plan_id"],
-    ampere: row["ampere"],
-    fee: row["fee"],
-  )
-end
-
-CSV.foreach(csv_dir.join("usage_charges.csv"), headers: true) do |row|
-  UsageCharge.create!(
-    plan_id: row["plan_id"],
-    usage_lower: row["usage_lower"],
-    usage_upper: row["usage_upper"],
-    unit_price: row["unit_price"],
-  )
+ActiveRecord::Base.transaction do
+  seeds.each do |seed|
+    CSV.foreach(csv_dir.join(seed[:file]), headers: true) do |row|
+      attributes = seed[:attributes].map { |attr| [attr.to_sym, row[attr]] }.to_h
+      seed[:model].create!(attributes)
+    end
+  end
 end

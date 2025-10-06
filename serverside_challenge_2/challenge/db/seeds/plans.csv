@@ -1,5 +1,5 @@
-id,provider_id,name
-1,1,従量電灯B
-2,1,スタンダードS
-3,2,ずっとも電気1
-4,3,おうちプラン
+code,provider_code,name
+plan_1,provider_1,従量電灯B
+plan_2,provider_1,スタンダードS
+plan_3,provider_2,ずっとも電気1
+plan_4,provider_3,おうちプラン

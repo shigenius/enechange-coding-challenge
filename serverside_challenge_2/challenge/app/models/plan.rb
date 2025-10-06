@@ -1,7 +1,7 @@
 class Plan < ApplicationRecord
-  belongs_to :provider
-  has_many :basic_fees, dependent: :destroy
-  has_many :usage_charges, dependent: :destroy
+  belongs_to :provider, primary_key: :code, foreign_key: :provider_code
+  has_many :basic_fees, dependent: :destroy, primary_key: :code, foreign_key: :plan_code
+  has_many :usage_charges, dependent: :destroy, primary_key: :code, foreign_key: :plan_code
 
   validates :name, presence: true
 
@@ -58,17 +58,19 @@ end
 #
 # Table name: plans
 #
-#  id          :bigint           not null, primary key
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  provider_id :bigint           not null
+#  id            :bigint           not null, primary key
+#  code          :string           not null
+#  name          :string           not null
+#  provider_code :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_plans_on_provider_id  (provider_id)
+#  index_plans_on_code           (code) UNIQUE
+#  index_plans_on_provider_code  (provider_code)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (provider_id => providers.id)
+#  fk_rails_...  (provider_code => providers.code)
 #

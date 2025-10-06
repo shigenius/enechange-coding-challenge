@@ -11,12 +11,12 @@ RSpec.describe BasicFee, type: :model do
     it { is_expected.to validate_presence_of(:fee) }
     it { is_expected.to validate_numericality_of(:fee).is_greater_than_or_equal_to(0) }
 
-    describe 'uniqueness of plan_id and ampere combination' do
+    describe 'uniqueness of plan_code and ampere combination' do
       let(:plan) { create(:plan) }
       let!(:existing_basic_fee) { create(:basic_fee, plan:, ampere: 30, fee: 1000) }
 
       context 'when combination already exists' do
-        it 'is invalid with duplicate plan_id and ampere' do
+        it 'is invalid with duplicate plan_code and ampere' do
           new_basic_fee = build(:basic_fee, plan:, ampere: 30, fee: 1500)
           expect(new_basic_fee).not_to be_valid
           expect(new_basic_fee.errors[:ampere]).to include('has already been taken')
@@ -61,18 +61,19 @@ end
 #
 #  id                        :bigint           not null, primary key
 #  ampere(契約アンペア数(A)) :integer          not null
+#  code                      :string           not null
 #  fee(基本料金(円))         :decimal(10, 2)   not null
+#  plan_code                 :string           not null
 #  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  plan_id                   :bigint           not null
 #
 # Indexes
 #
-#  index_basic_fees_on_ampere              (ampere)
-#  index_basic_fees_on_plan_id             (plan_id)
-#  index_basic_fees_on_plan_id_and_ampere  (plan_id,ampere) UNIQUE
+#  index_basic_fees_on_ampere                (ampere)
+#  index_basic_fees_on_code                  (code) UNIQUE
+#  index_basic_fees_on_plan_code_and_ampere  (plan_code,ampere) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (plan_id => plans.id)
+#  fk_rails_...  (plan_code => plans.code)
 #

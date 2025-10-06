@@ -217,17 +217,19 @@ end
 #
 # Table name: plans
 #
-#  id          :bigint           not null, primary key
-#  name        :string           not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  provider_id :bigint           not null
+#  id            :bigint           not null, primary key
+#  code          :string           not null
+#  name          :string           not null
+#  provider_code :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
 #
 # Indexes
 #
-#  index_plans_on_provider_id  (provider_id)
+#  index_plans_on_code           (code) UNIQUE
+#  index_plans_on_provider_code  (provider_code)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (provider_id => providers.id)
+#  fk_rails_...  (provider_code => providers.code)
 #

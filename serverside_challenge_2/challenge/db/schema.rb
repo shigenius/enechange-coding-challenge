@@ -15,43 +15,49 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_28_070132) do
   enable_extension "plpgsql"
 
   create_table "basic_fees", comment: "基本料金", force: :cascade do |t|
-    t.bigint "plan_id", null: false
+    t.string "code", null: false
+    t.string "plan_code", null: false
     t.integer "ampere", null: false, comment: "契約アンペア数(A)"
     t.decimal "fee", precision: 10, scale: 2, null: false, comment: "基本料金(円)"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ampere"], name: "index_basic_fees_on_ampere"
-    t.index ["plan_id", "ampere"], name: "index_basic_fees_on_plan_id_and_ampere", unique: true
-    t.index ["plan_id"], name: "index_basic_fees_on_plan_id"
+    t.index ["code"], name: "index_basic_fees_on_code", unique: true
+    t.index ["plan_code", "ampere"], name: "index_basic_fees_on_plan_code_and_ampere", unique: true
   end
 
   create_table "plans", comment: "プラン", force: :cascade do |t|
-    t.bigint "provider_id", null: false
+    t.string "code", null: false
+    t.string "provider_code", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["provider_id"], name: "index_plans_on_provider_id"
+    t.index ["code"], name: "index_plans_on_code", unique: true
+    t.index ["provider_code"], name: "index_plans_on_provider_code"
   end
 
   create_table "providers", comment: "電力会社", force: :cascade do |t|
+    t.string "code", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_providers_on_code", unique: true
   end
 
   create_table "usage_charges", comment: "従量料金", force: :cascade do |t|
-    t.bigint "plan_id", null: false
+    t.string "code", null: false
+    t.string "plan_code", null: false
     t.integer "usage_lower", null: false, comment: "電気使用量(kWh) 下限"
     t.integer "usage_upper", comment: "電気使用量(kWh) 上限"
     t.decimal "unit_price", precision: 10, scale: 2, null: false, comment: "従量料金単価(円/kWh)"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["plan_id", "usage_lower", "usage_upper"], name: "index_usage_charges_on_plan_id_and_usage_lower_and_usage_upper"
-    t.index ["plan_id"], name: "index_usage_charges_on_plan_id"
+    t.index ["code"], name: "index_usage_charges_on_code", unique: true
+    t.index ["plan_code", "usage_lower", "usage_upper"], name: "index_usage_charges_on_plan_code_and_usage_range"
     t.index ["usage_lower", "usage_upper"], name: "index_usage_charges_on_usage_lower_and_usage_upper"
   end
 
-  add_foreign_key "basic_fees", "plans"
-  add_foreign_key "plans", "providers"
-  add_foreign_key "usage_charges", "plans"
+  add_foreign_key "basic_fees", "plans", column: "plan_code", primary_key: "code"
+  add_foreign_key "plans", "providers", column: "provider_code", primary_key: "code"
+  add_foreign_key "usage_charges", "plans", column: "plan_code", primary_key: "code"
 end
