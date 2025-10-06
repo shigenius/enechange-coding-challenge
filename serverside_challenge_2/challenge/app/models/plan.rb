@@ -50,7 +50,7 @@ class Plan < ApplicationRecord
   def self.calc_price(basic_fee:, usage_charge:, usage:)
     fee = basic_fee.fee
     charge = usage_charge.calc_charge(usage)
-    (fee + charge).floor # TODO: 小数点以下の扱い
+    (fee + charge).floor
   end
 end
 
