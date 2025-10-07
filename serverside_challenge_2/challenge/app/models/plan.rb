@@ -13,7 +13,7 @@ class Plan < ApplicationRecord
     joins(:basic_fees, :usage_charges)
       .includes(:provider, :basic_fees, :usage_charges)
       .merge(BasicFee.by_ampere(ampere))
-      .merge(UsageCharge.by_usage(usage))
+      .merge(UsageCharge.lower_than(usage))
       .distinct
   end
 
@@ -28,12 +28,12 @@ class Plan < ApplicationRecord
     plans = self.by_ampere_and_usage(ampere, usage)
     plans.map do |plan|
       basic_fee = plan.basic_fees.first
-      usage_charge = plan.usage_charges.first
+      usage_charges = plan.usage_charges
 
       {
         provider_name: plan.provider.name,
         plan_name: plan.name,
-        price: self.calc_price(basic_fee:, usage_charge:, usage:),
+        price: self.calc_price(basic_fee:, usage_charges:, usage:),
       }
     end
   end
@@ -44,13 +44,13 @@ class Plan < ApplicationRecord
   # NOTE: 現時点では③そのほかは考慮しない
   # NOTE: もし他の箇所で同じように料金を計算する必要が出てきた場合や、そのほかを計算し複雑化する場合は、電気料金の値オブジェクト化を検討すること
   # @param basic_fee [BasicFee] 基本料金オブジェクト
-  # @param usage_charge [UsageCharge] 従量料金オブジェクト
+  # @param usage_charges [Array<UsageCharge>] 従量料金オブジェクトの配列
   # @param usage [Integer] 電気使用量(kWh)
   # @return [Integer] 合計電気料金 (円)
-  def self.calc_price(basic_fee:, usage_charge:, usage:)
+  def self.calc_price(basic_fee:, usage_charges:, usage:)
     fee = basic_fee.fee
-    charge = usage_charge.calc_charge(usage)
-    (fee + charge).floor
+    total_charge = usage_charges.sum { |uc| uc.calc_charge(usage) }
+    (fee + total_charge).floor
   end
 end
 

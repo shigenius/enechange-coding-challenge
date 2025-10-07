@@ -6,18 +6,15 @@ RSpec.describe UsageCharge, type: :model do
   end
 
   describe 'scopes' do
-    describe '.by_usage' do
-      subject { described_class.by_usage(usage) }
+    describe '.lower_than' do
+      subject { described_class.lower_than(usage) }
 
       let(:usage) { 100 }
 
-      let!(:usage_charge_1) { create(:usage_charge, usage_lower: 0, usage_upper: 100) }
-      let!(:usage_charge_2) { create(:usage_charge, usage_lower: 100, usage_upper: 200) }
-      let!(:usage_charge_3) { create(:usage_charge, usage_lower: 100, usage_upper: nil) }
-
-      let!(:usage_charge_4) { create(:usage_charge, usage_lower: 0, usage_upper: 99) }
-      let!(:usage_charge_5) { create(:usage_charge, usage_lower: 101, usage_upper: 200) }
-      let!(:usage_charge_6) { create(:usage_charge, usage_lower: 101, usage_upper: nil) }
+      let!(:usage_charge_1) { create(:usage_charge, usage_lower: 0) }
+      let!(:usage_charge_2) { create(:usage_charge, usage_lower: 99) }
+      let!(:usage_charge_3) { create(:usage_charge, usage_lower: 100) }
+      let!(:usage_charge_4) { create(:usage_charge, usage_lower: 101) }
 
       it 'returns usage charges that include the specified usage' do
         expect(subject).to contain_exactly(usage_charge_1, usage_charge_2, usage_charge_3)
@@ -28,11 +25,76 @@ RSpec.describe UsageCharge, type: :model do
   describe '#calc_charge' do
     subject { usage_charge.calc_charge(usage) }
 
-    let(:usage_charge) { build(:usage_charge, unit_price: 19.88) }
-    let(:usage) { 111 }
+    context '使用量が0kWhの場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 0, usage_upper: 120, unit_price: 19.88) }
+      let(:usage) { 0 }
 
-    it '期待される従量料金を返すこと' do
-      expect(subject).to be_within(0.01).of(2206.68)
+      it '0を返すこと' do
+        expect(subject).to eq 0
+      end
+    end
+
+    context '第1段階内での使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 0, usage_upper: 120, unit_price: 19.88) }
+      let(:usage) { 50 }
+
+      it '期待される従量料金を返すこと' do
+        expect(subject).to eq 994.0 # 19.88 * 50
+      end
+    end
+
+    context '第1段階の上限を超える使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 0, usage_upper: 120, unit_price: 19.88) }
+      let(:usage) { 121 }
+
+      it '期待される従量料金を返すこと' do
+        expect(subject).to be_within(0.01).of(2385.6) # 19.88 * 120（上限）
+      end
+    end
+
+    context '第2段階の境界値（下限-1）での使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 120, usage_upper: 300, unit_price: 26.48) }
+      let(:usage) { 119 }
+
+      it '0を返すこと' do
+        expect(subject).to eq 0.0
+      end
+    end
+
+    context '第2段階の境界値（下限）での使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 120, usage_upper: 300, unit_price: 26.48) }
+      let(:usage) { 120 }
+
+      it '0を返すこと' do
+        expect(subject).to eq 0.0
+      end
+    end
+
+    context '第2段階内での使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 120, usage_upper: 300, unit_price: 26.48) }
+      let(:usage) { 200 }
+
+      it '期待される従量料金を返すこと' do
+        expect(subject).to be_within(0.01).of(2118.4) # 26.48 * (200 - 120)
+      end
+    end
+
+    context '第2段階の上限を超える使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 120, usage_upper: 300, unit_price: 26.48) }
+      let(:usage) { 301 }
+
+      it '期待される従量料金を返すこと' do
+        expect(subject).to be_within(0.01).of(4766.4) # 26.48 * (300 - 120)
+      end
+    end
+
+    context '上限なしの段階での使用量の場合' do
+      let(:usage_charge) { build(:usage_charge, usage_lower: 300, usage_upper: nil, unit_price: 26.48) }
+      let(:usage) { 350 }
+
+      it '期待される従量料金を返すこと' do
+        expect(subject).to be_within(0.01).of(1324) # 26.48 * (350 - 300)
+      end
     end
   end
 
@@ -59,18 +121,33 @@ RSpec.describe UsageCharge, type: :model do
         end
       end
 
-      context '下限が既存の範囲よりも小さく、上限が既存の下限より小さい場合（完全に離れている）' do
+      context '新規上限 = 既存下限 - 1' do
         let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 99) }
         it_behaves_like 'valid'
       end
 
-      context '下限が既存の上限よりも大きい場合（完全に離れている）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 201, usage_upper: 300) }
+      context '新規上限 = 既存下限' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 100) }
         it_behaves_like 'valid'
       end
 
-      context '別のプランに属する場合' do
-        let(:new_charge) { build(:usage_charge, plan: create(:plan), usage_lower: 100, usage_upper: 200) }
+      context '新規上限 = 既存下限 + 1' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 101) }
+        it_behaves_like 'invalid'
+      end
+
+      context '新規下限 = 既存上限 - 1' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 199, usage_upper: 300) }
+        it_behaves_like 'invalid'
+      end
+
+      context '新規下限 = 既存上限' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 200, usage_upper: 300) }
+        it_behaves_like 'valid'
+      end
+
+      context '新規下限 = 既存上限 + 1' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 201, usage_upper: 300) }
         it_behaves_like 'valid'
       end
 
@@ -79,46 +156,36 @@ RSpec.describe UsageCharge, type: :model do
         it_behaves_like 'invalid'
       end
 
-      context '既存範囲の下端と重なる場合（[50, 100]）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 50, usage_upper: 100) }
+      context '既存範囲の中に含まれる場合' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 101, usage_upper: 199) }
         it_behaves_like 'invalid'
       end
 
-      context '既存範囲の下端を超えて部分的に重なる場合（[50, 101]）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 50, usage_upper: 101) }
+      context '既存範囲の中に含む場合' do
+        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 99, usage_upper: 201) }
         it_behaves_like 'invalid'
       end
 
-      context '既存範囲の上端と重なる場合（[200, 250]）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 200, usage_upper: 250) }
-        it_behaves_like 'invalid'
-      end
-
-      context '既存範囲の上端を超えて部分的に重なる場合（[199, 250]）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 199, usage_upper: 250) }
-        it_behaves_like 'invalid'
-      end
-
-      context '既存範囲の中に完全に含まれる場合（[120, 180]）' do
-        let(:new_charge) { build(:usage_charge, plan:, usage_lower: 120, usage_upper: 180) }
-        it_behaves_like 'invalid'
+      context '別のプランに属する場合' do
+        let(:new_charge) { build(:usage_charge, plan: create(:plan), usage_lower: 100, usage_upper: 200) }
+        it_behaves_like 'valid'
       end
 
       context '既存の usage_upper が nil（上限なし）の場合' do
         let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 100, usage_upper: nil) }
 
-        context '下限・上限ともに既存範囲より小さい場合（重複なし）' do
-          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 50, usage_upper: 99) }
+        context '新規上限 = 既存下限 - 1' do
+          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 99) }
           it_behaves_like 'valid'
         end
 
-        context '既存範囲の下端と一致する場合（[50, 100]）' do
-          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 50, usage_upper: 100) }
-          it_behaves_like 'invalid'
+        context '新規上限 = 既存下限' do
+          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 100) }
+          it_behaves_like 'valid'
         end
 
-        context '下限が既存範囲内にある場合（[101, 1000]）' do
-          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 101, usage_upper: 1000) }
+        context '新規上限 = 既存下限 + 1' do
+          let(:new_charge) { build(:usage_charge, plan:, usage_lower: 0, usage_upper: 101) }
           it_behaves_like 'invalid'
         end
 
@@ -141,18 +208,21 @@ RSpec.describe UsageCharge, type: :model do
       context '新しい usage_upper が nil（上限なし）の場合' do
         let(:new_charge) { build(:usage_charge, plan:, usage_lower: 150, usage_upper: nil) }
 
-        context '既存範囲が完全に下側にある場合（[100, 149]）' do
-          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 100, usage_upper: 149) }
+        context '新規上限 = 既存下限 - 1' do
+          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 0, usage_upper: 149) }
+
           it_behaves_like 'valid'
         end
 
-        context '下限が既存範囲の下端と一致する場合（[150, 151]）' do
-          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 150, usage_upper: 151) }
-          it_behaves_like 'invalid'
+        context '新規上限 = 既存下限' do
+          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 0, usage_upper: 150) }
+
+          it_behaves_like 'valid'
         end
 
-        context '下限が既存範囲のすぐ上にある場合（[151, 152]）' do
-          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 151, usage_upper: 152) }
+        context '新規上限 = 既存下限 + 1' do
+          let!(:existing_charge) { create(:usage_charge, plan:, usage_lower: 0, usage_upper: 151) }
+
           it_behaves_like 'invalid'
         end
 
