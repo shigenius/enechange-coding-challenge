@@ -10,11 +10,11 @@ class UsageCharge < ApplicationRecord
   scope :lower_than, ->(usage) { where("usage_lower <= ?", usage) }
 
   # 従量料金 = 従量料金単価(円/kWh) × 電気使用量(kWh)
-  #   ※ 計算で用いる 電気使用量(kWh) は、usage_lower以上、usage_upper以下の範囲内の使用量
+  #   ※ 計算で用いる 電気使用量(kWh) は、usage（またはusage_upper） - usage_lower で計算する
   # @param usage [Integer] 電気使用量(kWh)
   # @return [BigDecimal] 従量料金(円)
   def calc_charge(usage)
-    return 0.0 if usage_lower > usage
+    return 0.0 if usage_lower >= usage
 
     upper = usage_upper.present? && usage_upper < usage ? usage_upper : usage
     applicable_usage = upper - usage_lower
