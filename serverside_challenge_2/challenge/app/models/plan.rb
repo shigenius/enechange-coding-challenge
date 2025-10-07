@@ -28,7 +28,7 @@ class Plan < ApplicationRecord
     plans = self.by_ampere_and_usage(ampere, usage)
     plans.map do |plan|
       basic_fee = plan.basic_fees.sole # 基本料金は契約アンペア数に対して1つだけ存在する想定
-      usage_charges = plan.usage_charges
+      usage_charges = plan.usage_charges # すでに絞り込まれている想定
 
       {
         provider_name: plan.provider.name,
